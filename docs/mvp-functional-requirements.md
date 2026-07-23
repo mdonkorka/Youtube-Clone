@@ -1,0 +1,60 @@
+# Youtube Clone MVP Requirements
+
+- Accounts
+    - Users should be able to sign in with their email address
+    - Users should be able to create an account with their first name, surname, email address, password.
+    - Users should be able to reset their password
+    - Users should be able to logout
+    - Users should be able to view the website without signing in.
+- Channels
+    - Personal Channel
+        - Users should be able to have their own channel.
+        - Users should be able to view their channel
+        - Users should be able to have a home tab on their channel with their videos and created playlists.
+        - Users should be able to have a videos tab on their channel with their videos.
+        - Users should be able to have a playlists tab on their channel, with their public videos
+        - Users should be able to display their email address, channel link, join date, subscribers count, videos count, and views count.
+        - Users can delete their channel.
+    - Other Channels
+        - Users should be able to view other peoples channels
+        - Users should be able to subscribe to other channels
+- Videos
+    - Users should be able to upload videos.
+    - Users should be able to upload their videos as drafts without posting them.
+    - Users should be able to delete their videos.
+    - Users should be able to comment on videos, and delete their comments.
+    - Users should be able to like, and unlike videos
+    - Watching Videos
+        - Users should be able to watch videos.
+        - Users will be able to pause/play, change volume and mute, when watching a video.
+- Search
+    - Users should be able to search for videos.
+    - Users should be able to search for channels.
+    - Users should be able to search for playlists.
+    - Users will be able to prioritise videos by popularity
+    - Users should be able to filter videos by their upload date filters, and duration.
+- Playlists
+    - Users should be able to add videos they’ve uploaded, and haven’t uploaded to playlists.
+    - Users should be able to view their playlists
+    - On the playlists page showing all of the users playlists, users will be able to sort their playlists (not videos) A-Z, or by date added.
+    - When a user is viewing a channels playlists, they should be able to sort by date added, and last video added.
+    - Users playlists will have views.
+    - Users should be able to delete a playlist.
+    - Users should be able to remove videos from a playlist.
+    - Watching a playlist
+        - Users should be able to sequentially watch videos in their playlists.
+    - Liked Videos
+        - Users liked videos should go in to a liked videos playlists.
+        - Users should have a liked videos playlist be default.
+        - Users should be able to sort their liked videos playlist by the date added, date published, and popularity.
+    - Watch Later
+        - Users should have a watch later playlist by default.
+        - Users should be able to sort their watch later videos by the date added, date published, and popularity.
+- Home page
+    - Users should be able to view other peoples videos, and their own on the home page.
+- Youtube Studio
+    - Users should be able to see what videos they’ve uploaded.
+    - Users should be able to delete their videos.
+    - Users should be able to edit their ‘video’ title, description, thumbnail, and channel playlists when a video is being uploaded. This is for before and after a video has been uploaded.
+    - Users should be able to edit their ‘playlist’ title, default video order (not including manual sorting order).
+    - Users should be able to customise their ‘channel’ banner image, picture, name, handle, description, and contact info, and view their channel URL.
