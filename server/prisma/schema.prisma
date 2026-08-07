@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client"
+	output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model channels {
+  id                BigInt          @id @default(autoincrement())
+  user_id           BigInt          @unique
+  name              String          @db.VarChar(255)
+  handle            String          @unique @db.VarChar(100)
+  image_path        String?         @db.VarChar(512)
+  banner_image_path String?         @db.VarChar(512)
+  description       String?
+  contact_email     String?         @db.VarChar(255)
+  created_at        DateTime?       @default(now()) @db.Timestamptz(6)
+  users             users           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  playlists         playlists[]
+  subscriptions     subscriptions[]
+  videos            videos[]
+}
+
+model comments {
+  id             BigInt     @id @default(autoincrement())
+  video_id       BigInt
+  user_id        BigInt
+  parent_id      BigInt?
+  text           String
+  like_count     BigInt     @default(0)
+  created_at     DateTime?  @default(now()) @db.Timestamptz(6)
+  comments       comments?  @relation("commentsTocomments", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  other_comments comments[] @relation("commentsTocomments")
+  users          users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  videos         videos     @relation(fields: [video_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model playlist_videos {
+  id                 BigInt            @id @default(autoincrement())
+  video_id           BigInt
+  playlist_id        BigInt?
+  system_playlist_id BigInt?
+  added_at           DateTime?         @default(now()) @db.Timestamptz(6)
+  playlists          playlists?        @relation(fields: [playlist_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  system_playlists   system_playlists? @relation(fields: [system_playlist_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  videos             videos            @relation(fields: [video_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model playlists {
+  id              BigInt            @id @default(autoincrement())
+  channel_id      BigInt
+  name            String            @db.VarChar(255)
+  view_count      BigInt            @default(0)
+  created_at      DateTime?         @default(now()) @db.Timestamptz(6)
+  playlist_videos playlist_videos[]
+  channels        channels          @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model refresh_tokens {
+  id         BigInt   @id @default(autoincrement())
+  user_id    BigInt
+  token      String   @unique @db.VarChar(512)
+  expires_at DateTime @db.Timestamptz(6)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model search_vectors {
+  id            BigInt                  @id @default(autoincrement())
+  item_type     String                  @db.VarChar(255)
+  item_id       BigInt
+  search_vector Unsupported("tsvector")
+
+  @@index([search_vector], map: "idx_search_vectors_gin", type: Gin)
+}
+
+model subscriptions {
+  id         BigInt   @id @default(autoincrement())
+  user_id    BigInt
+  channel_id BigInt
+  channels   channels @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model system_playlists {
+  id              BigInt            @id @default(autoincrement())
+  user_id         BigInt
+  playlist_type   String            @db.VarChar(255)
+  created_at      DateTime?         @default(now()) @db.Timestamptz(6)
+  playlist_videos playlist_videos[]
+  users           users             @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model users {
+  id               BigInt             @id @default(autoincrement())
+  first_name       String             @db.VarChar(100)
+  surname          String             @db.VarChar(100)
+  email            String             @unique @db.VarChar(255)
+  password         String             @db.VarChar(255)
+  username         String             @unique @db.VarChar(100)
+  channels         channels?
+  comments         comments[]
+  refresh_tokens   refresh_tokens[]
+  subscriptions    subscriptions[]
+  system_playlists system_playlists[]
+  video_likes      video_likes[]
+}
+
+model video_likes {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt
+  video_id   BigInt
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  videos     videos    @relation(fields: [video_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model videos {
+  id              BigInt            @id @default(autoincrement())
+  channel_id      BigInt
+  video_path      String            @db.VarChar(512)
+  url_id          String            @unique @db.VarChar(50)
+  title           String            @db.VarChar(255)
+  description     String?
+  thumbnail_path  String?           @db.VarChar(512)
+  status          String            @db.VarChar(255)
+  view_count      BigInt            @default(0)
+  created_at      DateTime?         @default(now()) @db.Timestamptz(6)
+  comments        comments[]
+  playlist_videos playlist_videos[]
+  video_likes     video_likes[]
+  channels        channels          @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
