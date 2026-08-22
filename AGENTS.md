@@ -57,17 +57,13 @@ You must structure the server code under `repo/server/src/` using a **Feature-Ba
 
 ```
 repo/server/src/
-├── config/               # Environment variables, CORS, global constants
+├── generated/            # Prisma generated client (gitignored)
 ├── lib/                  # Shared singletons (prisma.ts)
 ├── middlewares/          # Centralized middlewares (auth.ts, error.ts)
-├── modules/              # Feature modules grouped by MVP requirements
-│   ├── auth/             # Sign in/up, logout, password resets
-│   ├── channels/         # Channel profiles, subscription, banners
-│   ├── videos/           # Uploads, streaming, comments, likes
-│   ├── playlists/        # Playlist CRUD, Watch Later, Liked Videos
-│   ├── search/           # Search querying, GIN vectors, filters
-│   └── studio/           # Studio dashboard, edit metadata, drafts
-├── utils/                # Standard utility functions
+├── modules/              # Feature modules (Feature-Based Architecture)
+│   ├── [module_name]/    # Individual feature modules
+│   └── ...               # Additional modules added as implemented
+├── test/                 # Integration tests (*.test.ts)
 ├── app.ts                # Express application definition & route registration
 └── index.ts              # Server startup & DB connection bootstrapping
 ```
@@ -105,12 +101,18 @@ Inside each subdirectory in `src/modules/`, you must maintain this precise file 
 
 ---
 
+## 🧪 Testing Strategy
+*   **Framework:** **Vitest** + **Supertest**.
+*   **Integration Tests:** We favor integration tests that hit a real PostgreSQL database.
+*   **Database Safety:** Vitest is configured to load `.env.test`, which points to a dedicated test database. Tests must only run against the dedicated test database.
+
+---
+
 ## 🛠️ Key CLI Commands
 
 *   **Start Development Watcher:** `npm run dev`
+*   **Run Test Suite:** `npm test` (or `npm run test:ui` for visual mode)
 *   **Build/Compile Typescript:** `npm run build`
-*   **Generate Prisma Types:** `npx prisma generate`
-*   **Apply DB Migrations:** `npx prisma migrate dev`
 
 ---
 
@@ -126,8 +128,15 @@ Inside each subdirectory in `src/modules/`, you must maintain this precise file 
 
 ## ✅ Agent Definition of Done
 Before requesting completion of any task, you must verify:
-1.  **Typecheck:** Run `npx tsc --noEmit` and confirm there are zero compiling errors.
-2.  **ESM Compliance:** Ensure all relative import statements have `.js` or `.json` extensions.
-3.  **ORM Pathing:** Confirm all Prisma imports come from `../src/generated/client/client.js`.
-4.  **Serialization Safeguard:** Ensure no raw BigInt types are returned directly to client JSON without global or manual string mapping.
-5.  **No Dynamic Placeholders:** Ensure no temporary, unresolved, or boilerplate placeholders are left in the codebase.
+1.  **Test Pass:** Run `npm test` and confirm all tests are green.
+2.  **Typecheck:** Run `npx tsc --noEmit` and confirm there are zero compiling errors.
+3.  **ESM Compliance:** Ensure all relative import statements have `.js` or `.json` extensions.
+4.  **ORM Pathing:** Confirm all Prisma imports come from `../generated/client/client.js`.
+5.  **Serialization Safeguard:** Ensure no raw BigInt types are returned directly to client JSON without global or manual string mapping.
+6.  **No Dynamic Placeholders:** Ensure no temporary, unresolved, or boilerplate placeholders are left in the codebase.
+
+---
+
+## Additional Instructions
+
+* Make your explanations short. Do not make them longwinded.
