@@ -10,3 +10,20 @@ describe('GET /health', () => {
 		expect(response.body).toEqual({ status: 'ok' })
 	})
 })
+
+describe('Global error handling', () => {
+	it('returns 400 with BAD_REQUEST on malformed JSON payload', async () => {
+		const response = await request(app)
+			.post('/api/auth/register')
+			.set('Content-Type', 'application/json')
+			.send('{"bad":')
+
+		expect(response.status).toBe(400)
+		expect(response.body).toEqual({
+			error: {
+				message: 'Invalid JSON payload',
+				code: 'BAD_REQUEST',
+			},
+		})
+	})
+})

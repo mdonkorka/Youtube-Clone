@@ -6,5 +6,6 @@ export default defineConfig({
     env: loadEnv('test', process.cwd(), ''),
     globals: true,
     environment: 'node',
+    fileParallelism: false,
   },
 })

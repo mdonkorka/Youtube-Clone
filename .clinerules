@@ -1,0 +1,72 @@
+## 📌 Project Context
+*   **Project Nature:** Local Hobby Project (not planned for cloud deployment).
+*   **Design Philosophy:** Simple, direct, local-first, highly type-safe. Avoid introducing cloud-native complexity (like AWS S3, serverless features, or Docker configurations) unless specifically requested.
+
+---
+
+## Strict Rules
+* Please keep your explanations very short, and use terminology a junior enginner would understand, who is new to javascript and typescript.
+* When justifying your decisions, explain what is best/most common practice for what you're trying to achieve.
+* Always run git diff with --no-pager (e.g., git --no-pager diff). Never invoke interactive pagers or commands that require manual user input to exit.
+* Do not write inline code comments unless specifically requested.
+
+---
+
+## 🚨 Critical Technical Guardrails (Do Not Break)
+
+### 1. The Strict `.js` Extension ESM Rule
+*   The project uses Node.js ES Modules (`"type": "module"` in `package.json`).The TypeScript compiler is configured with `"module": "NodeNext"` and `"verbatimModuleSyntax": true`. Every relative import in TypeScript **must explicitly end with the `.js` or `.json` file extension** (even though the source file is `.ts`).
+
+### 2. Custom Prisma Client Import Path
+*   Prisma client generation path is customized in `schema.prisma` via `output = "../src/generated/client"`.
+*   **Strict Rule:** Never attempt to import `PrismaClient` from the standard `@prisma/client` package.
+
+### 3. Database Schema Updates & Migrations
+*   **Strict Rule:** To modify models, fields, or relationships in the database, you **must** use incremental migrations to preserve local development mock testing data:
+    ```bash
+    npx prisma migrate dev --name <migration_name>
+    ```
+    *(Note: Running this command will automatically apply the migration to the local DB and generate the updated client types behind the scenes).*
+*   For non-database schema modifications (like adding custom client generators or formatting):
+    ```bash
+    npx prisma generate
+    ```
+---
+
+## Module Folder Anatomy
+Inside each subdirectory in `src/modules/`, you must maintain this precise file naming convention:
+*   `[module].routes.ts` - Defines endpoints, registers middleware, and binds controller methods.
+*   `[module].controller.ts` - Receives HTTP requests, performs input validation, calls service layer, and returns responses.
+*   `[module].service.ts` - Houses core business logic and queries using the Prisma client.
+*   `[module].types.ts` - Declares TypeScript interfaces or Zod schemas.
+
+---
+
+## 🧪 Testing Strategy
+
+### -> Strict Red-Green-Refactor TDD
+
+**Standing rules (apply at all times):**
+- Never write production code before a failing test exists for it.
+- One behavior per test. Smallest possible increment — don't write multiple tests or endpoints ahead of the current step.
+
+**The cycle (repeat per behavior):**
+1. Write the Vitest/Supertest test first.
+2. Run it. Confirm the failure is an assertion failure on missing behavior. If it's anything else (e.g. crash, import error, syntax error, unexpected error type), stop and fix the setup — don't treat that as a valid Red.
+3. Write the minimum code to pass — the general solution, not logic special-cased to the test's exact inputs.
+4. Run the test and confirm it passes without modifying the test. If a test seems wrong, stop and flag it — don't edit it silently.
+5. Refactor: check for duplication, unclear naming, structural issues, or any other code smell. If nothing needs changing, say so explicitly rather than skipping silently.
+6. Commit.
+
+**Do not proceed to the next behavior until the current one is committed.**
+
+---
+
+## ✅ Agent Definition of Done
+Before requesting completion of any task, you must verify:
+1.  **Test Pass:** Run `npm test` inside `server/` (or `npx vitest run`) and confirm all tests are green.
+2.  **Typecheck:** Run `npx tsc --noEmit` inside `server/` and confirm there are zero compiling errors.
+
+---
+
+
